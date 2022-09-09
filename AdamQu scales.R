@@ -15,3 +15,7 @@ dat$species <- as.factor(dat$species)
 species <- levels(dat$species)
 species
 length(species)
+#^How many unique values there are in "species"
+dat$species==species[1]
+#^Do the values in dat$species equal the first value in the "species" variable
+
