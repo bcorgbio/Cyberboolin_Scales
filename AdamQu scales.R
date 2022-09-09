@@ -3,6 +3,9 @@
 library(ggplot2)
 library(tidyverse)
 
+dat$species <- as.factor(dat$species)
+species <- levels(dat$species)
+
 #A dat variable containing the scales dataset.
 dat <- read.csv("scales.csv")
 
@@ -33,6 +36,5 @@ for(i in species){
   print(p)
 }
 dev.off()
-
-
+list.files(pattern=".pdf")
 
