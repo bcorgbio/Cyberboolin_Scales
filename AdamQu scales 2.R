@@ -3,7 +3,7 @@
 library(ggplot2)
 library(tidyverse)
 
-#Load the "scales" dataset into a variable
+#Load the "scales" data set into a variable
 dat <- read.csv("scales.csv")
 
 #Report the class of each column in the dataset
