@@ -103,3 +103,25 @@ pseed2%>%
   group_by(date,fin)%>%
   mutate(peak=frame %in% find.peaks(frame,amp.bl))%>%
   ggplot(aes(x=frame,y=amp.bl,alpha=peak,col=peak))+geom_point()+facet_grid(date~fin)
+
+#tibble w/ 3300 amplitudes
+pseed.max <- pseed2%>%
+  group_by(date,fin)%>%
+  mutate(peak=frame %in% find.peaks(frame,amp.bl))%>%
+  filter(peak==T) #new filter
+
+#linear regression model
+pseed.max%>%
+  ggplot(aes(x=bl.s,y=amp.bl))+geom_point()+geom_smooth(method="lm")
+
+#P value
+amp.aov <-  aov(amp.bl~bl.s,pseed.max)
+summary(amp.aov)
+
+#means v speeds linear regression for each fish
+pseed.max %>%
+  group_by(fish, bl.s) %>%
+  summarize(mean.max=mean(amp.bl)) %>%
+  ggplot(aes(x=bl.s,y=mean.max,col=fish))+geom_point()+geom_smooth(method="lm")
+
+#How to compute the sum of the amplitude for each frame?
