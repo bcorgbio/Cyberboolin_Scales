@@ -76,13 +76,29 @@ pseed.sum.max <- pseed.sum.max %>%
 
 pseed.sum.max %>%
   ggplot(aes(x=speed,y=amp.sum.mean,col=fish))+geom_point()+geom_smooth(method="lm")+
-  geom_errorbar(aes(ymin=amp.sum.mean-amp.sum.se, ymax=amp.sum.mean+amp.sum.se), width=0.5, color="skyblue")+theme_bw()
+  geom_errorbar(aes(ymin=amp.sum.mean-amp.sum.se, ymax=amp.sum.mean+amp.sum.se), width=0.5, color="skyblue")+theme_classic()
 
 
 #Download this file, read it as a tibble and merge it with the your new pseed.sum.max tibble. [see below].
+
 pseed.met.rate <- read_csv("pseed.met.rate.csv")
-pseed.sum.max <- pseed.met.rate %>%
-  
+
+pseed.max <- pseed.max%>%
+  merge(pseed.met.rate,by=c("fish","date","m.s","cm.s","bl.s"))
+
+pseed.mean.rate <- pseed.max %>%
+  group_by(fish, speed)%>%
+  summarize(amp.met.rate=mean(met.rate))
+
+pseed.sum.max <- pseed.sum.max %>%
+  left_join(pseed.mean.rate, by = c("speed","fish"))
+
+print(pseed.sum.max)
 
 #Use ggplot to plot the metabolic power output of each fish vs. mean maximum of amp.sum.
+
+pseed.sum.max %>%
+  ggplot(aes(x=amp.met.rate,y=amp.sum.mean,col=fish))+geom_point()+geom_smooth(method="lm")+geom_errorbar(aes(ymin=amp.sum.mean-amp.sum.se, ymax=amp.sum.mean+amp.sum.se), width=0.05, color="pink", position=pd)+theme_classic()
+
+
 #Include the code for all the tasks listed above in the “groupname_module2.R” script and upload it to this link.
