@@ -125,3 +125,24 @@ pseed.max %>%
   ggplot(aes(x=bl.s,y=mean.max,col=fish))+geom_point()+geom_smooth(method="lm")
 
 #How to compute the sum of the amplitude for each frame?
+
+#Add column (amp.sum) to the tibble
+pseed2 <- pseed2 %>%
+  group_by(date,frame) %>%
+  mutate(amp.sum=sum(amp.bl))
+#violates tidy principle
+
+#deletes 1 row for each frame in each experiment
+pseed2 %>%
+  filter(fin=="R")
+#lost half our data, amp.sum only applies to the right fin
+
+#Pivots data (makes it wider), left and right fin have their own amplitude column, we can then sum these values to get the sum of amplitude
+pseed.wide <- pseed2 %>%
+  select(-amp)%>%
+  pivot_wider(names_from = fin,values_from = amp.bl) %>%
+  mutate(amp.sum=L+R)%>%
+  print() 
+
+#How does the sum of amplitude of both fins vary over our range of speeds?
+
