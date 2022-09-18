@@ -26,12 +26,7 @@ pseed.wide <- pseed2 %>%
   
 view(pseed.wide)
 
-
-
-
 #Compute the mean maximum* of all the amp.sums for each specific swimming speed for each fish just like we did for mean maximum amplitude of each fin (i.e., the mean of all the max amplitudes across each experiment for each fish). Make sure this is contained in a new tibble named pseed.sum.max. Call this column amp.sum.mean.
-
-
 
 find.peaks <- function(x,y,mult=100){
   f <- fget(features(x = x,y=y*mult))[2:3]%>% 
@@ -47,8 +42,6 @@ pseed.max <- pseed.wide %>%
   filter(peak==T) 
 pseed.max$peak <- NULL
 
-
-
 pseed.sum.max<- pseed.max %>%
   group_by(fish, speed) %>%
   summarize(amp.sum.mean=mean(amp.sum)) 
@@ -56,7 +49,6 @@ pseed.sum.max<- pseed.max %>%
 #plot of speed v amp.sum.mean
 pseed.sum.max%>%
   ggplot(aes(x=speed,y=amp.sum.mean))+geom_point()+geom_smooth(method="lm")
-
 
 #Create a custom function that computes the standard error of the mean (SE). [see below] and add a column in your summary table pseed.sum.max for SE and call it amp.sum.se.
 
@@ -75,7 +67,9 @@ pseed.sum.max <- pseed.sum.max %>%
 #Using ggplot, plot the amp.sum.mean vs. specific swimming speed and add error bars that correspond to the SE of amp.sum. Be sure to color your points and error bars by specimen (fish).
 
 pseed.sum.max %>%
-  ggplot(aes(x=speed,y=amp.sum.mean,col=fish))+geom_point()+geom_smooth(method="lm")+
+  ggplot(aes(x=speed,y=amp.sum.mean,col=fish))+
+  geom_point()+
+  geom_smooth(method="lm")+
   geom_errorbar(aes(ymin=amp.sum.mean-amp.sum.se, ymax=amp.sum.mean+amp.sum.se), width=0.5, color="skyblue")+theme_classic()
 
 
@@ -98,7 +92,8 @@ print(pseed.sum.max)
 #Use ggplot to plot the metabolic power output of each fish vs. mean maximum of amp.sum.
 
 pseed.sum.max %>%
-  ggplot(aes(x=amp.met.rate,y=amp.sum.mean,col=fish))+geom_point()+geom_smooth(method="lm")+geom_errorbar(aes(ymin=amp.sum.mean-amp.sum.se, ymax=amp.sum.mean+amp.sum.se), width=0.05, color="pink", position=pd)+theme_classic()
+  ggplot(aes(x=amp.met.rate,y=amp.sum.mean,col=fish))+
+  geom_point()+
+  geom_smooth(method="lm")+
+  geom_errorbar(aes(ymin=amp.sum.mean-amp.sum.se, ymax=amp.sum.mean+amp.sum.se), width=0.05, color="pink")+theme_classic()
 
-
-#Include the code for all the tasks listed above in the “groupname_module2.R” script and upload it to this link.
