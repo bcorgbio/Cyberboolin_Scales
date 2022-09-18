@@ -146,3 +146,4 @@ pseed.wide <- pseed2 %>%
 
 #How does the sum of amplitude of both fins vary over our range of speeds?
 
+
