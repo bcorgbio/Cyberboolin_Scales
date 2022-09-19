@@ -81,4 +81,30 @@ pseed.max %>% #means for each speed and fish
   summarize(mean.max=mean(amp.bl)) %>%
   ggplot(aes(x=bl.s,y=mean.max,col=fish))+geom_point()+geom_smooth(method="lm")
 
+pseed2 #want to compute sum of amplitudes for each frame
+pseed.wide <- pseed2 %>%
+  select(-amp)%>%
+  pivot_wider(names_from = fin,values_from = amp.bl) %>%
+  mutate(amp.sum=L+R)%>%
+  print() 
+
+#How does the sum of amplitude of both fins vary over our range of speeds?
+#1. Compute mean maximum of amp.sum values
+pseed.max.sum <- pseed.wide %>% #means for each speed and fish
+  group_by(fish, amp.sum) %>% 
+  summarize(amp.sum.mean = mean(amp.sum))
+
+stdEM <- function(x){
+  sd(x)/sqrt(length(x))
+}
+
+pseed.sum.se <- pseed.max.sum%>%
+  group_by(fish, amp.sum,amp.sum.mean)%>%
+  summarize(amp.sum.se = stdEM(amp.sum.mean))
+
+pseed.sum.max <- pseed.sum.max %>%
+  left_join(pseed.sum.se, by = "amp.sum") %>%
+  print()
+
+
 
