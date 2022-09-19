@@ -81,7 +81,7 @@ pseed.sum.max %>%
 
 #Download this file, read it as a tibble and merge it with the your new pseed.sum.max tibble. [see below].
 pseed.met.rate <- read_csv("pseed.met.rate.csv")
-pseed.sum.max <- pseed.met.rate %>%
+pseed.sum.max <- pseed.met.rate
   
 
 #Use ggplot to plot the metabolic power output of each fish vs. mean maximum of amp.sum.
