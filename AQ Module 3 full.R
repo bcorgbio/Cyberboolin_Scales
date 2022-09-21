@@ -125,6 +125,14 @@ anole.log%>%
   ggplot(aes(x=Ecomorph2,y=value)) +geom_boxplot() +stat_summary(fun=mean, geom="point", size=3)+facet_grid(name~.,scales = "free_y")+ylab("residual")
 
 #1. Combine the code above so that you can establish the anole.log data tibble.
+anole2 <- anole%>%
+  left_join(anole.eco)%>%
+  filter(!Ecomorph%in%c("U","CH"))%>% #exclude U, CH values in Ecomorph
+  na.omit()%>% 
+  print()
+anole.log <- anole2%>% #change size, ecological data to log transformations
+  mutate_at(c("SVL", "HTotal","PH","ArbPD"),log)
+
 
 
 
