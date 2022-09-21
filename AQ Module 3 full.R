@@ -117,3 +117,14 @@ p.eco.phylo <- anole.log%>%
 
 print(p.eco.phylo)
 
+#Pivot longer + facet, plot phylogentically corrected, uncorrected residuals against ecomorph
+anole.log%>%
+  dplyr::select(Ecomorph2,res,phylo.res)%>%
+  pivot_longer(cols=c("res","phylo.res"))%>%
+  print%>%
+  ggplot(aes(x=Ecomorph2,y=value)) +geom_boxplot() +stat_summary(fun=mean, geom="point", size=3)+facet_grid(name~.,scales = "free_y")+ylab("residual")
+
+#1. Combine the code above so that you can establish the anole.log data tibble.
+
+
+
