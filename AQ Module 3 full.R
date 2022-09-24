@@ -16,7 +16,7 @@ anole.eco <- read_csv("anole.eco.csv")
 #merge anole data tibble with anole.eco
 anole2 <- anole%>%
   left_join(anole.eco)%>%
-  filter(!Ecomorph%in%c("U","CH"))%>% #exclude U, CH values in Ecomorph
+  filterlar(!Ecomorph%in%c("U","CH"))%>% #exclude U, CH values in Ecomorph
   na.omit()%>% 
   print()
 anole.log <- anole2%>% #change size, ecological data to log transformations
@@ -117,7 +117,7 @@ p.eco.phylo <- anole.log%>%
 
 print(p.eco.phylo)
 
-#Pivot longer + facet, plot phylogentically corrected, uncorrected residuals against ecomorph
+#Pivot longer + facet, plot phylogenetically corrected, uncorrected residuals against ecomorph
 anole.log%>%
   dplyr::select(Ecomorph2,res,phylo.res)%>%
   pivot_longer(cols=c("res","phylo.res"))%>%
@@ -156,16 +156,27 @@ p.ecoPD + geom_boxplot()+stat_summary(fun=mean, geom="point", size=3)
 
 #4. BM, PGLS models
 #PGLS model with hindlimb-SVL relationship + perch height
-pgls.BM.PH <- gls(HTotal~SVL + PH, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+pgls.BM.PH <- gls(HTotal ~SVL + PH, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
 #PGLS model with hindlimb-SVL relationship + perch diameter
-pgls.BM.PD <- gls(HTotal~SVL + ArbPD, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+pgls.BM.PD <- gls(HTotal ~SVL + ArbPD, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
 #PGLS model with hindlimb-SVL relationship + PH + PD
 pgls.BM.PHPD <- gls(HTotal ~SVL + PH + ArbPD, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
 
 #5. Assess fit of models using AICc, AICw
 anole.log.aic <- AICc(pgls.BM.PH, pgls.BM.PD, pgls.BM.PHPD)
 aicw(anole.log.aic$AICc)
-#Both PH and PD are significant predictors of hindlimb length since the PGLS model with both covariates has the lowest AIC score and delta is 0.
+#The PGLS model with both covariates is the best fit; it has the lowest AIC score and delta equal to 0.
+anova(pgls.BM.PHPD)
+#Both PH and PD are significant predictors of hindlimb length in a phylogenetic context (p-value<0.05).
 
+#6. Plot showing effect of covariates on hindlimb residuals of the pgls.BM.PHPD model
+anole.log <- anole.log %>% 
+  mutate(phylo.res.PHPD=residuals(pgls.BM.PHPD))
+
+anole.log%>%
+  dplyr::select(HTotal,res,phylo.res.PHPD)%>%
+  pivot_longer(cols=c("resPH","resPD"))%>%
+  print%>%
+  ggplot(aes(x=HTotal,y=value)) +geom_boxplot() +stat_summary(fun=mean, geom="point", size=3)+facet_grid(name~.,scales = "free_y")+ylab("residual")
 
 
