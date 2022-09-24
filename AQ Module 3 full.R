@@ -133,6 +133,39 @@ anole2 <- anole%>%
 anole.log <- anole2%>% #change size, ecological data to log transformations
   mutate_at(c("SVL", "HTotal","PH","ArbPD"),log)
 
+#2. Construct two simple linear models that assess the effect of perch diameter and height
+anole.PH <- lm(HTotal~SVL+PH, anole.log)
+anole.PD <- lm(HTotal~SVL+ArbPD, anole.log)
+
+#3. Plot residuals of linear models against PH and ArbPD.
+anole.log <- anole.log %>% 
+  mutate(resPH=residuals(anole.PH))
+##anole.log %>% 
+  ##ggplot(aes(Ecomorph2,resPH))+geom_point()
+p.ecoPH <- anole.log %>% 
+  ggplot(aes(Ecomorph2,resPH))+geom_boxplot()
+p.ecoPH + geom_boxplot() +stat_summary(fun=mean, geom="point", size=3)
+
+anole.log <- anole.log %>% 
+  mutate(resPD=residuals(anole.PD))
+##anole.log %>% 
+  ##ggplot(aes(Ecomorph2,resPD))+geom_point()
+p.ecoPD <- anole.log %>% 
+  ggplot(aes(Ecomorph2,resPD)) + geom_boxplot()
+p.ecoPD + geom_boxplot()+stat_summary(fun=mean, geom="point", size=3)
+
+#4. BM, PGLS models
+#PGLS model with hindlimb-SVL relationship + perch height
+pgls.BM.PH <- gls(HTotal~SVL + PH, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+#PGLS model with hindlimb-SVL relationship + perch diameter
+pgls.BM.PD <- gls(HTotal~SVL + ArbPD, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+#PGLS model with hindlimb-SVL relationship + PH + PD
+pgls.BM.PHPD <- gls(HTotal ~SVL + PH + ArbPD, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+
+#5. Assess fit of models using AICc, AICw
+anole.log.aic <- AICc(pgls.BM.PH, pgls.BM.PD, pgls.BM.PHPD)
+aicw(anole.log.aic$AICc)
+#Both PH and PD are significant predictors of hindlimb length since the PGLS model with both covariates has the lowest AIC score and delta is 0.
 
 
 
