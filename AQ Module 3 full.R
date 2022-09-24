@@ -167,5 +167,6 @@ anole.log.aic <- AICc(pgls.BM.PH, pgls.BM.PD, pgls.BM.PHPD)
 aicw(anole.log.aic$AICc)
 #Both PH and PD are significant predictors of hindlimb length since the PGLS model with both covariates has the lowest AIC score and delta is 0.
 
+fdafafd
 
 
