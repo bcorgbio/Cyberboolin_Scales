@@ -137,7 +137,7 @@ anole.log <- anole2%>% #change size, ecological data to log transformations
 anole.PH <- lm(HTotal~SVL+PH, anole.log)
 anole.PD <- lm(HTotal~SVL+ArbPD, anole.log)
 
-#3. Plot residuals of linear models against PH and ArbPD.
+#3. Plot residuals of linear models against Ecomorph.
 anole.log <- anole.log %>% 
   mutate(resPH=residuals(anole.PH))
 ##anole.log %>% 
