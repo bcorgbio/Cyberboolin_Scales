@@ -174,9 +174,13 @@ anole.log <- anole.log %>%
   mutate(phylo.res.PHPD=residuals(pgls.BM.PHPD))
 
 anole.log%>%
-  dplyr::select(HTotal,res,phylo.res.PHPD)%>%
+  dplyr::select(PH,Ecomorph2, resPH,resPD)%>%
   pivot_longer(cols=c("resPH","resPD"))%>%
   print%>%
-  ggplot(aes(x=HTotal,y=value)) +geom_boxplot() +stat_summary(fun=mean, geom="point", size=3)+facet_grid(name~.,scales = "free_y")+ylab("residual")
+  ggplot(aes(x=PH,y=value,col=Ecomorph2)) +geom_point() + geom_smooth(method="lm")+facet_grid(name~.,scales = "free_y")+ylab("residual")
 
+p.eco.phylo.PHPD <- anole.log%>%
+  ggplot(aes(x=PH,y=phylo.res.PHPD)) +geom_point() +stat_summary(fun=mean, geom="point", size=3)
+
+print(p.eco.phylo.PHPD)
 
