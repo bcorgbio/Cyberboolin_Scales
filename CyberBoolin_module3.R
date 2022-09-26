@@ -13,15 +13,6 @@ library(MuMIn)
 anole <- read_csv("anole.dat.csv")
 anole.eco <- read_csv("anole.eco.csv")
 
-#merge anole data tibble with anole.eco
-anole2 <- anole%>%
-  left_join(anole.eco)%>%
-  filterlar(!Ecomorph%in%c("U","CH"))%>% #exclude U, CH values in Ecomorph
-  na.omit()%>% 
-  print()
-anole.log <- anole2%>% #change size, ecological data to log transformations
-  mutate_at(c("SVL", "HTotal","PH","ArbPD"),log)
-
 anole.tree <- read.tree("anole.tre")
 plot(anole.tree,cex=0.4)
 
@@ -56,11 +47,13 @@ p.ecoPD <- anole.log %>%
 p.ecoPD + geom_boxplot()+stat_summary(fun=mean, geom="point", size=3)
 
 #4. BM, PGLS models
-#PGLS model with hindlimb-SVL relationship + perch height
+#PGLS model with hindlimb-SVL relationship + perch height:
 pgls.BM.PH <- gls(HTotal ~SVL + PH, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
-#PGLS model with hindlimb-SVL relationship + perch diameter
+
+#PGLS model with hindlimb-SVL relationship + perch diameter:
 pgls.BM.PD <- gls(HTotal ~SVL + ArbPD, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
-#PGLS model with hindlimb-SVL relationship + PH + PD
+
+#PGLS model with hindlimb-SVL relationship + PH + PD:
 pgls.BM.PHPD <- gls(HTotal ~SVL + PH + ArbPD, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
 
 #5. Assess fit of models using AICc, AICw
