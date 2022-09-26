@@ -143,8 +143,8 @@ anole.log <- anole.log %>%
 ##anole.log %>% 
   ##ggplot(aes(Ecomorph2,resPH))+geom_point()
 p.ecoPH <- anole.log %>% 
-  ggplot(aes(Ecomorph2,resPH))+geom_boxplot()
-p.ecoPH + geom_boxplot() +stat_summary(fun=mean, geom="point", size=3)
+  ggplot(aes(Ecomorph2,resPH)) + geom_boxplot()
+p.ecoPH + geom_boxplot() + stat_summary(fun=mean, geom="point", size=3)
 
 anole.log <- anole.log %>% 
   mutate(resPD=residuals(anole.PD))
@@ -169,7 +169,7 @@ aicw(anole.log.aic$AICc)
 anova(pgls.BM.PHPD)
 #Both PH and PD are significant predictors of hindlimb length in a phylogenetic context (p-value<0.05).
 
-#6. Plot showing effect of covariates on hindlimb residuals of the pgls.BM.PHPD model
+#6. Plot showing effect of covariates on residuals of the pgls.BM.PHPD model
 anole.log <- anole.log %>% 
   mutate(phylo.res.PHPD=residuals(pgls.BM.PHPD))
 
@@ -177,10 +177,5 @@ anole.log%>%
   dplyr::select(PH,Ecomorph2, resPH,resPD)%>%
   pivot_longer(cols=c("resPH","resPD"))%>%
   print%>%
-  ggplot(aes(x=PH,y=value,col=Ecomorph2)) +geom_point() + geom_smooth(method="lm")+facet_grid(name~.,scales = "free_y")+ylab("residual")
-
-p.eco.phylo.PHPD <- anole.log%>%
-  ggplot(aes(x=PH,y=phylo.res.PHPD)) +geom_point() +stat_summary(fun=mean, geom="point", size=3)
-
-print(p.eco.phylo.PHPD)
+  ggplot(aes(x=PH,y=value,col=Ecomorph2)) +geom_point() + stat_summary(fun=mean, geom="point", size=3) + facet_grid(name~.,scales = "free_y")+ylab("residual")
 
