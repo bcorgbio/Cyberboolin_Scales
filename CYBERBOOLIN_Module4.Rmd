@@ -18,7 +18,11 @@ library(knitr) #for knitting options
 ```
 
 ## Introduction
-The purpose of this project was to 
+The purpose of the Anole project was to 
+
+</center>
+![A cute ***Anolis*** lizard](https://live.staticflickr.com/3061/2494132461_1c7529585f_b.jpg)
+</center>
 
 ## Methods
 
