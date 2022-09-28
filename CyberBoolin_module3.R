@@ -32,16 +32,12 @@ anole.PD <- lm(HTotal~SVL+ArbPD, anole.log)
 #3. Plot residuals of linear models against Ecomorph.
 anole.log <- anole.log %>% 
   mutate(resPH=residuals(anole.PH))
-##anole.log %>% 
-##ggplot(aes(Ecomorph2,resPH))+geom_point()
 p.ecoPH <- anole.log %>% 
   ggplot(aes(Ecomorph2,resPH)) + geom_boxplot()
 p.ecoPH + geom_boxplot() + stat_summary(fun=mean, geom="point", size=3)
 
 anole.log <- anole.log %>% 
   mutate(resPD=residuals(anole.PD))
-##anole.log %>% 
-##ggplot(aes(Ecomorph2,resPD))+geom_point()
 p.ecoPD <- anole.log %>% 
   ggplot(aes(Ecomorph2,resPD)) + geom_boxplot()
 p.ecoPD + geom_boxplot()+stat_summary(fun=mean, geom="point", size=3)
