@@ -2,7 +2,9 @@
 title: "Project 4"
 author: "CyberBoolin"
 date: "2022-09-28"
+bibliography: BIOL3140.bib
 output: html_document
+
 ---
 
 ```{r setup, include=FALSE}
@@ -18,15 +20,17 @@ library(knitr) #for knitting options
 ```
 
 ## Introduction
-The purpose of the Anole project was to 
+Include a brief background to the anole project (why are we studying this anyway?), what the main questions is, and how this question will be answered.
 
 </center>
 ![A cute ***Anolis*** lizard](https://live.staticflickr.com/3061/2494132461_1c7529585f_b.jpg)
 </center>
 
 ## Methods
+Briefly outline the specifics of how the question will be answered.
 
 ## Results
+Briefly summarize the results.
 ```{r, "load the data", include=FALSE}
 anole <- read_csv("anole.dat.csv")
 anole.eco <- read_csv("anole.eco.csv")
@@ -76,7 +80,29 @@ print(p.eco.phylo)
 ```
 
 ## Discussion
+Briefly discuss the importance of the results (i.e., how they relate to the main question).
 
 ## Author Contributions
+Briefly state what the contributions of each team member to the project.
 
 ## References
+Hagey, Travis J, Scott Harte, Mathew Vickers, Luke J Harmon, and Lin Schwarzkopf. 2017.
+“There’s More Than One Way to Climb a Tree: Limb Length and Microhabitat Use in Lizards with Toe Pads.” PloS One 12 (9): e0184641.
+
+anole.phylo.aic <- AICc(pgls.BM1,pgls.BM2,pgls.OU1,pgls.OU2)
+anole.phylow.aicw <- aicw(anole.phylo.aic$AICc)
+
+n.spec <- anole.log%>%
+  group_by(Ecomorph2)%>%
+  summarise(n.species=n())
+
+n.spec%>%
+  kable(caption = "AIC Values")
+
+
+An altered “AIC” chunk that produces a table of AIC values with kable. Be sure to include a descriptive caption
+
+Another chunk of code, inserted before the “plot residuals” chunk, that produces a figure of a regression plot of log-transformed HTotal vs SVL with points colored by Ecomorph2. Be sure to include a descriptive caption here, too.
+A citation to the Hagey et al. (2017) paper in the introduction (include in the References section, too)
+A citation in the methods sections that identifies the source of the phylogenetic tree used in PGLS analysis (include in the References section as well).
+
