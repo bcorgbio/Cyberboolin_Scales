@@ -20,14 +20,16 @@ library(knitr) #for knitting options
 ```
 
 ## Introduction
-Include a brief background to the anole project (why are we studying this anyway?), what the main questions is, and how this question will be answered.
+
+The main goal of this project is to look at the morphological and allometric difference between the different ecomorphs within the genus *Anolis*. The term ecomorph was created by evolutionary biologist and herpetologist Ernest Edward Williams, using the genus *Anolis* as his model. 'Ecomorph' means a group of species with a similar ecological niche and behavior within said niche. For the *Anolis* genus, we will be assessing the relationship between hind limb length and size, based on a recent study by @hagey2017there in the context of their niche using a variety of visualization methods.
+
 
 </center>
 ![A cute ***Anolis*** lizard](https://live.staticflickr.com/3061/2494132461_1c7529585f_b.jpg)
 </center>
 
 ## Methods
-Briefly outline the specifics of how the question will be answered.
+First, an anole.log data tibble was established. Following this, two simple linear models that assesed the effect of perch diameter and height (by including these as covariates in the models) were constructed using the log trasformed data. Then explore how both perch diameter and height effect the hindlimb-SVL relationship by plotting the residuals of the simple linear models against these discrete factors. A phylogenetic least squares model of the hindlimb-SVL relationships was constructed under a BM model of trait evolution, including the unique combinations of the two covariates. Then, assess the fit of each of the three models using AICc and AICw and comment on whether one or both of the covariates is a significant predictor of hindlimb length, in a phylogenetic context. Finally, produce a plot that visualizes the effect of the covariates and factors on the hindlimb residuals of the best fitting PGLS model.
 
 ## Results
 Briefly summarize the results.
@@ -36,6 +38,7 @@ anole <- read_csv("anole.dat.csv")
 anole.eco <- read_csv("anole.eco.csv")
 anole.tree <- read.tree("anole.tre")
 ```
+
 ```{r, "join, filter, mutate to log", include=FALSE}
 anole2 <- anole%>%
 left_join(anole.eco)%>%
@@ -45,6 +48,7 @@ left_join(anole.eco)%>%
 anole.log <- anole2%>%
   mutate_at(c("SVL", "HTotal","PH","ArbPD"),log)
 ```
+
 ```{r, "PGLS models", include=FALSE}
 ### phylogenetic GLS models
 
@@ -60,16 +64,32 @@ pgls.OU1 <- gls(HTotal ~SVL, correlation = corMartins(0,phy = anole.tree,form=~S
 #PGLS under OU, w, ecomorph
 pgls.OU2 <- gls(HTotal ~SVL * Ecomorph2, correlation = corMartins(0,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
 ```
-```{r, "AIC", include=FALSE}
+
+```{r, "AIC", echo=FALSE}
 #AIC operations
 anole.phylo.aic <- AICc(pgls.BM1,pgls.BM2,pgls.OU1,pgls.OU2)
 anole.phylow.aicw <- aicw(anole.phylo.aic$AICc)
+
+#Kable
+anole.phylo.aic%>%
+  kable(caption="AIC of BM and BM and OU PGLS Models Considering Ecomorph of *Anolis*")
+anole.phylow.aicw%>%
+  mutate(models=c("pgls.BM1","pgls.BM2","pgls.OU1","pgls.OU2"))%>%
+  kable(caption="AIC of BM and OU PGLS Models Considering Ecomorph of *Anolis* ")
 ```
+
 ```{r, "add residuals", include=FALSE}
 #add phylo-corrected residuals
 anole.log <- anole.log%>%
   mutate(phylo.res=residuals(pgls.BM2))
 ```
+
+```{r, fig.cap="Regression Plot of Log-transformed HTotal vs. SVL by Ecomorphs", echo=FALSE}
+#Regression Plot 
+anole.log%>%
+  ggplot(aes(HTotal,SVL,col=Ecomorph2))+geom_point()+geom_smooth(method="lm")
+```
+
 ```{r,"plot residuals", fig.cap="Boxplot of phylogenetically corrected hindlimb residuals versus anole ecomorph", echo=FALSE}
 #plot residuals
 p.eco.phylo <- anole.log%>%
@@ -78,6 +98,8 @@ ggplot(aes(x=Ecomorph2,y=phylo.res)) +geom_boxplot() +stat_summary(fun=mean, geo
 print(p.eco.phylo)
 
 ```
+
+
 
 ## Discussion
 Briefly discuss the importance of the results (i.e., how they relate to the main question).
@@ -89,20 +111,13 @@ Briefly state what the contributions of each team member to the project.
 Hagey, Travis J, Scott Harte, Mathew Vickers, Luke J Harmon, and Lin Schwarzkopf. 2017.
 “There’s More Than One Way to Climb a Tree: Limb Length and Microhabitat Use in Lizards with Toe Pads.” PloS One 12 (9): e0184641.
 
-anole.phylo.aic <- AICc(pgls.BM1,pgls.BM2,pgls.OU1,pgls.OU2)
-anole.phylow.aicw <- aicw(anole.phylo.aic$AICc)
-
-n.spec <- anole.log%>%
-  group_by(Ecomorph2)%>%
-  summarise(n.species=n())
-
-n.spec%>%
-  kable(caption = "AIC Values")
 
 
-An altered “AIC” chunk that produces a table of AIC values with kable. Be sure to include a descriptive caption
+An altered “AIC” chunk that produces a table of AIC values with kable. Be sure to include a descriptive caption **GOTEEM B-)**
 
-Another chunk of code, inserted before the “plot residuals” chunk, that produces a figure of a regression plot of log-transformed HTotal vs SVL with points colored by Ecomorph2. Be sure to include a descriptive caption here, too.
-A citation to the Hagey et al. (2017) paper in the introduction (include in the References section, too)
+Another chunk of code, inserted before the “plot residuals” chunk, that produces a figure of a regression plot of log-transformed HTotal vs SVL with points colored by Ecomorph2. Be sure to include a descriptive caption here, too. **DONE**
+
+A citation to the Hagey et al. (2017) paper in the introduction (include in the References section, too) **CRUSHED IT**
+
 A citation in the methods sections that identifies the source of the phylogenetic tree used in PGLS analysis (include in the References section as well).
 
