@@ -2,6 +2,7 @@
 title: "Project 4 AQ full"
 output: html_document
 date: "2022-09-28"
+bibliography: test.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -17,6 +18,18 @@ library(knitr) #for knitting options
 # Introduction
 
 This is the introduction.
+
+[class site](https://bcorgbio.github.io/class/)
+
+<center>
+[![An anolis lizard](https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Green_anole.jpg/320px-Green_anole.jpg)](https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Green_anole.jpg/320px-Green_anole.jpg)
+</center>
+
+A table:
+
+
+
+
 
 # Methods
 
@@ -82,15 +95,39 @@ print(p.eco.phylo)
 
 ```
 
+```{r}
+n.spec <- anole.log%>%
+  group_by(Ecomorph2)%>%
+  summarise(n.species=n())
+
+n.spec%>%
+  kable(caption = "Number of species within each anole ecormorph included in this study")
+```
+
+paged_table(anole.log, options = list(rows.print = 15))
+
+|    Ecomorph        | Description                             |
+|------------------|-------------------------------------------|
+| crown-giant     | Large bodied, lives in crown               |
+| grass-bush      | Lives in grass or bushes                   |
+| trunk           | Lives on the trunk                         |
+| trunk-crown     | Lives in the trunk-crown interface         |
+| trunk-ground    | Lives in the trunk-ground interface        |
+| twig            | Lives out on the twigs of trees             |
+
+
 # Discussion
 
-Discuss
+@hagey2017there studied the hindlimb-ecomorph relationship in anoles.
+
+A recent study considered the hindlimb-ecomorph relationship in anoles [@hagey2017there].
 
 # Author contributions
 
 Authors
 
-# Bibliography
+# References
 
-bib
+@@hagey2017there 
+
 
