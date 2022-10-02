@@ -23,22 +23,19 @@ library(knitr) #for knitting options
 The main goal of this project is to look at the morphological and allometric difference between the different ecomorphs within the genus *Anolis*. The term ecomorph was created by evolutionary biologist and herpetologist Ernest Edward Williams, using the genus *Anolis* as his model. 'Ecomorph' means a group of species with a similar ecological niche and behavior within said niche. For the *Anolis* genus, we will be assessing the relationship between hind limb length and size, based on a recent study by @hagey2017there in the context of their niche, using a variety of visualization methods.
 
 
-</center>
+<center>
 ![A cute ***Anolis*** lizard](https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/fl8686930997-image-ktwphq1k.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=00c64df37149ed4dbb4a36dd65065bfe)
 </center>
 
 ## Methods
 
-First, an anole.log data tibble was established. 
-
-Following this, two linear models using the log-transformed data from anole.log were constructed. These showed the effect of using perch height and diameter as covariates.
+First, an anole.log data tibble was established, followed by the construction of two linear models using the log-transformed data from anole.log that showed the effect of perch height and diameter as covariates.
 
 A data tibble was then mutated to include residuals of the models made in the previous step, and were plotted against the covariates to show the relationship between perch diameter and height with hindlimb-SVL
 
+A phylogenetic least squares model of the hindlimb-SVL relationships **(hindlimb-SVL relationship + perch height, hindlimb-SVL relationship + perch diameter, and hindlimb-SVL relationship + perch height + perch diameter)** was then constructed using a BM (Brownian Motion) model and the phylogenetic tree by @poe2017phylogenetic
 
-A phylogenetic least squares model of the hindlimb-SVL relationships **(hindlimb-SVL relationship + perch height, hindlimb-SVL relationship + perch diameter, and hindlimb-SVL relationship + perch height + perch diamete)** was then constructed using a BM (Brownian Motion) model and the phylogenetic tree by @poe2017phylogenetic
-
-Then, the fit of each of the three previously mentioned models was assessed using AICc and AICw. AICc and AICw were also used to assess if any or both of the covariates were a predictor of hindlimb length.
+Then, the fit of each of the three aforementioned models was assessed using AICc and AICw. AICc and AICw were also used to assess if any or both of the covariates were a predictor of hindlimb length.
 
 Finally, a plot was produced that visualizes the effect of the covariates and factors on the hindlimb residuals of the best fitting PGLS model.
 
@@ -113,12 +110,11 @@ print(p.eco.phylo)
 
 
 ## Discussion
-The results of the PGLS models in addition to the analysis of the best fitting PGLS model, we decided that the PGLS under the Brownian Motion model including ecomorphs (PGLS.BM2) has the best fit. With this, we can come to the conclusion that ecomorphs have an impact on the relationship between snout-vent length and hindlimb length. Because the Brownian model has a better fit than the OU model, and because it is phylogenetically corrected, we can conclude that the traits evolved randomly, but also randomly within each lineage.
+From the results of the PGLS models in addition to the analysis of the best fitting PGLS model, we decided that the PGLS under the Brownian Motion model including ecomorphs (PGLS.BM2) has the best fit. With this, we can arrive at the conclusion that ecomorphs have an impact on the relationship between snout-vent length and hindlimb length. Because the Brownian model has a better fit than the OU model, and because it is phylogenetically corrected, we can conclude that the traits evolved randomly, as well as randomly within each lineage.
 
 ## Author Contributions
 Rachel Zhu worked on the the intro and the code chunks to produce the AIC values table, the methods, the author contributions and references section. Adam Qu worked on the regression plot of log-transformed Htotal vs SVL figure, the results, and the discussion.
 
 ## References
-
 
 
