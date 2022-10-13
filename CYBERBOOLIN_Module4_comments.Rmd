@@ -1,0 +1,121 @@
+---
+title: "Project 4"
+author: "CyberBoolin"
+date: "2022-09-28"
+bibliography: [BIOL3140.bib, BIL3140a.bib]
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r,include=FALSE}
+library(tidyverse) #always
+library(ape) #for evo analysis
+library(nlme) #ditto
+library(MuMIn) #for AIC
+library(geiger) #for eco analysis
+library(knitr) #for knitting options
+```
+
+## Introduction
+
+The main goal of this project is to look at the morphological and allometric difference between the different ecomorphs within the genus *Anolis*. The term ecomorph was created by evolutionary biologist and herpetologist Ernest Edward Williams, using the genus *Anolis* as his model. 'Ecomorph' means a group of species with a similar ecological niche and behavior within said niche. For the *Anolis* genus, we will be assessing the relationship between hind limb length and size, based on a recent study by @hagey2017there in the context of their niche, using a variety of visualization methods.
+
+
+<center>
+![A cute ***Anolis*** lizard](https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/fl8686930997-image-ktwphq1k.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=00c64df37149ed4dbb4a36dd65065bfe)
+</center>
+
+## Methods
+
+First, an anole.log data tibble was established, followed by the construction of two linear models using the log-transformed data from anole.log that showed the effect of perch height and diameter as covariates.
+
+A data tibble was then mutated to include residuals of the models made in the previous step, and were plotted against the covariates to show the relationship between perch diameter and height with hindlimb-SVL
+
+A phylogenetic least squares model of the hindlimb-SVL relationships **(hindlimb-SVL relationship + perch height, hindlimb-SVL relationship + perch diameter, and hindlimb-SVL relationship + perch height + perch diameter)** was then constructed using a BM (Brownian Motion) model and the phylogenetic tree by @poe2017phylogenetic
+
+Then, the fit of each of the three aforementioned models was assessed using AICc and AICw. AICc and AICw were also used to assess if any or both of the covariates were a predictor of hindlimb length.
+
+Finally, a plot was produced that visualizes the effect of the covariates and factors on the hindlimb residuals of the best fitting PGLS model.
+
+## Results
+From the AIC weights and scores, our results showed that PGLS.BM2 fit the data best. PGLS.BM2 includes ecomorphs, and evolves under Brownian motion. PGLS.BM2 had the lowest AIC score of -92.98036 and highest weight of 0.9660448. The boxplot of phylogenetically corrected residuals vs. ecomorphs shows that the trunk-crown ecomorph had the greatest spread in residuals, but overall, the mean residuals are close to 0 and therefore support PGLS.BM2 as the best fitting model.
+```{r, "load the data", include=FALSE}
+anole <- read_csv("anole.dat.csv")
+anole.eco <- read_csv("anole.eco.csv")
+anole.tree <- read.tree("anole.tre")
+```
+
+```{r, "join, filter, mutate to log", include=FALSE}
+anole2 <- anole%>%
+left_join(anole.eco)%>%
+  filter(!Ecomorph%in%c("U","CH"))%>%
+  na.omit()
+
+anole.log <- anole2%>%
+  mutate_at(c("SVL", "HTotal","PH","ArbPD"),log)
+```
+
+```{r, "PGLS models", include=FALSE}
+### phylogenetic GLS models
+
+#PGLS under BM, no ecomorph
+pgls.BM1 <- gls(HTotal ~SVL, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+
+#PGLS under BM, with ecomorph
+pgls.BM2 <- gls(HTotal ~SVL * Ecomorph2, correlation = corBrownian(1,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+
+#PGLS under OU, no ecomorph
+pgls.OU1 <- gls(HTotal ~SVL, correlation = corMartins(0,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+
+#PGLS under OU, with ecomorph
+pgls.OU2 <- gls(HTotal ~SVL * Ecomorph2, correlation = corMartins(0,phy = anole.tree,form=~Species),data = anole.log, method = "ML")
+```
+
+```{r, "AIC", echo=FALSE}
+#AIC operations
+anole.phylo.aic <- AICc(pgls.BM1,pgls.BM2,pgls.OU1,pgls.OU2)
+anole.phylow.aicw <- aicw(anole.phylo.aic$AICc)
+
+#Kable
+anole.phylo.aic%>%
+  kable(caption="AIC of BM and BM and OU PGLS Models Considering Ecomorph of *Anolis*")
+anole.phylow.aicw%>%
+  mutate(models=c("pgls.BM1","pgls.BM2","pgls.OU1","pgls.OU2"))%>%
+  kable(caption="AIC of BM and OU PGLS Models Considering Ecomorph of *Anolis* ")
+```
+
+```{r, "add residuals", include=FALSE}
+#add phylo-corrected residuals
+anole.log <- anole.log%>%
+  mutate(phylo.res=residuals(pgls.BM2))
+```
+
+```{r, fig.cap="Regression Plot of Log-transformed HTotal vs. SVL by Ecomorphs", echo=FALSE}
+#Regression Plot 
+anole.log%>%
+  ggplot(aes(HTotal,SVL,col=Ecomorph2))+geom_point()+geom_smooth(method="lm")
+```
+
+```{r,"plot residuals", fig.cap="Boxplot of phylogenetically corrected hindlimb residuals versus anole ecomorph", echo=FALSE}
+#plot residuals
+p.eco.phylo <- anole.log%>%
+ggplot(aes(x=Ecomorph2,y=phylo.res)) +geom_boxplot() +stat_summary(fun=mean, geom="point", size=3)
+
+print(p.eco.phylo)
+
+```
+
+
+
+## Discussion
+From the results of the PGLS models in addition to the analysis of the best fitting PGLS model, we decided that the PGLS under the Brownian Motion model including ecomorphs (PGLS.BM2) has the best fit. With this, we can arrive at the conclusion that ecomorphs have an impact on the relationship between snout-vent length and hindlimb length. Because the Brownian model has a better fit than the OU model, and because it is phylogenetically corrected, we can conclude that the traits evolved randomly, as well as randomly within each lineage.
+
+## Author Contributions
+Rachel Zhu worked on the the intro and the code chunks to produce the AIC values table, the methods, the author contributions and references section. Adam Qu worked on the regression plot of log-transformed Htotal vs SVL figure, the results, and the discussion.
+
+# CPK comments: Excellent work (15/15). Looks great!
+## References
+
+
